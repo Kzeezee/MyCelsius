@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@styles/error.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AuthRegister">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="150.0" prefWidth="600.0">
+               <children>
+                  <ImageView fitHeight="100.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@assets/MyCelsiusLogo.png" />
+                     </image></ImageView>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="20.0" top="40.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER">
+               <children>
+                  <Label text="Register">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefWidth="100.0" text="Email" textAlignment="RIGHT">
+                     <HBox.margin>
+                        <Insets left="-50.0" right="10.0" />
+                     </HBox.margin></Label>
+                  <TextField fx:id="registerEmail" promptText="Email" />
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER">
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+               <children>
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefWidth="100.0" text="Password" textAlignment="RIGHT">
+                     <HBox.margin>
+                        <Insets left="-50.0" right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="registerPassword" promptText="Password" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="190.0">
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefWidth="100.0" text="Confirm Password" textAlignment="RIGHT">
+                     <HBox.margin>
+                        <Insets left="-50.0" right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="registerConfirmPass" promptText="Confirm password" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="300.0">
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <Button fx:id="registerButton" mnemonicParsing="false" prefWidth="75.0" text="Register" />
+               </children>
+            </HBox>
+
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="190.0">
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+               <children>
+                  <Label alignment="CENTER" text="Already have an account? Click " />
+                  <Label fx:id="loginRedirect" alignment="CENTER" onMouseClicked="#loginRedirect" style="-fx-text-fill: blue;" text="here!" />
+               </children>
+            </HBox>
+
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

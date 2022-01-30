@@ -15,9 +15,16 @@ repositories {
 }
 
 dependencies {
+    // Utilities and others
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'org.slf4j:slf4j-simple:1.7.35'
     implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+    // Telegram bots
+    implementation 'org.telegram:telegrambots:5.6.0'
+    implementation 'org.telegram:telegrambots-abilities:5.6.0'
+    //Firebase
+    implementation 'com.google.firebase:firebase-admin:8.1.0'
 }
 
 test {

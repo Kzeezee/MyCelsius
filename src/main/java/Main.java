@@ -15,9 +15,19 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // Reading environment variables
+        // Set up telegram bot
+        // Set up Firebase admin sdk
+
+        initializeScene(primaryStage);
+        MyCelsiusTelegramBot.setup();
+    }
+
+    // Start the application on the login screen first
+    private void initializeScene(Stage primaryStage) {
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("main.fxml"));
+            root = FXMLLoader.load(getClass().getResource("auth_login.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
