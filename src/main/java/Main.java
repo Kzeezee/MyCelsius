@@ -21,6 +21,11 @@ public class Main extends Application {
 
         initializeScene(primaryStage);
         MyCelsiusTelegramBot.setup();
+        try {
+            Firebase.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Start the application on the login screen first

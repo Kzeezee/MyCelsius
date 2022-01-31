@@ -55,13 +55,15 @@ public class MyCelsiusTelegramBot extends AbilityBot {
     public ReplyFlow submit() {
         // TODO: Inline keyboard, invalid staff/organisation and guest submission process.
         Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Your temperature has been successfully recorded for " +
-                new Date().toString() + ".", getChatId(upd)), checkValidTemperature());
+                new Date().getDate() + ".\nSubmission date: " +  new Date().toString(),
+                getChatId(upd)), checkValidTemperature());
 
         Reply invalidOrganisation = Reply.of(upd -> silent.send("You have entered an invalid organisation code! Please retry the submission again. ",
-                getChatId(upd)), checkValidTemperature());
+                getChatId(upd)), invalidOrganisationCode());
 
-        Reply invalidStaff = Reply.of(upd -> silent.send("Your user ID is not recognised as a staff member. Are you submitting your temperature as a guest?",
-                getChatId(upd)), checkValidTemperature());
+        Reply invalidMember = Reply.of(upd -> silent.send("Your user ID is not recognised as a organisation member. " +
+                        "Please use /submitguest if you are a guest or contact your admins for more information.",
+                getChatId(upd)), validMember());
 
         ReplyFlow temperatureSubmission = ReplyFlow.builder(db)
                 .action(upd -> silent.send("Great! Now please submit your temperature.", getChatId(upd)))
@@ -71,7 +73,31 @@ public class MyCelsiusTelegramBot extends AbilityBot {
 
         return ReplyFlow.builder(db)
                 .action(upd -> silent.send("Please enter your organisation code for temperature submission first.", getChatId(upd)))
-                .onlyIf(hasMessage("/start"))
+                .onlyIf(hasMessage("/submit"))
+                .next(temperatureSubmission)
+                .build();
+    }
+
+    public ReplyFlow submitGuest() {
+        // TODO: Inline keyboard, invalid staff/organisation and guest submission process.
+        Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Your temperature has been successfully recorded for " +
+                new Date().toString() + ".", getChatId(upd)), checkValidTemperature());
+
+        Reply invalidOrganisation = Reply.of(upd -> silent.send("You have entered an invalid organisation code! Please retry the submission again. ",
+                getChatId(upd)), checkValidTemperature());
+
+        Reply invalidMember = Reply.of(upd -> silent.send("Your user ID is not recognised as a organisation member. Please submit the form again.",
+                getChatId(upd)), validMember());
+
+        ReplyFlow temperatureSubmission = ReplyFlow.builder(db)
+                .action(upd -> silent.send("Great! Now please submit your temperature.", getChatId(upd)))
+                .onlyIf(validOrganisationCode())
+                .next(submissionSuccess)
+                .build();
+
+        return ReplyFlow.builder(db)
+                .action(upd -> silent.send("Please enter your organisation code for temperature submission first.", getChatId(upd)))
+                .onlyIf(hasMessage("/submitguest"))
                 .next(temperatureSubmission)
                 .build();
     }
@@ -93,5 +119,15 @@ public class MyCelsiusTelegramBot extends AbilityBot {
     @NotNull
     private Predicate<Update> validOrganisationCode() {
         return upd -> upd.getMessage().getText().equals("deez");
+    }
+
+    @NotNull
+    private Predicate<Update> invalidOrganisationCode() {
+        return upd -> !upd.getMessage().getText().equals("deez");
+    }
+
+    @NotNull
+    private Predicate<Update> validMember() {
+        return upd -> upd.getMessage().getText().equals("checkstaff");
     }
 }

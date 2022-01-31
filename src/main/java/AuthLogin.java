@@ -1,3 +1,5 @@
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.hash.Scrypt;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -47,6 +49,7 @@ public class AuthLogin implements Initializable {
     private void onLoginSubmission() {
         System.out.println(validateInputs());
         // Authenticate with firebase
+        FirebaseAuth auth = FirebaseAuth.getInstance();
     }
 
     private Boolean validateInputs() {
