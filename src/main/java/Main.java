@@ -1,8 +1,8 @@
+import firebase.Firebase;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -14,18 +14,14 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
         // Reading environment variables
         // Set up telegram bot
-        // Set up Firebase admin sdk
+        // Set up firebase.Firebase admin sdk
 
         initializeScene(primaryStage);
         MyCelsiusTelegramBot.setup();
-        try {
-            Firebase.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Firebase.init();
     }
 
     // Start the application on the login screen first
