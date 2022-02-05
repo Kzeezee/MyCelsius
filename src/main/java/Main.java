@@ -1,4 +1,4 @@
-import firebase.Firebase;
+import bot.MyCelsiusTelegramBot;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,26 +14,25 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
-        // Reading environment variables
-        // Set up telegram bot
-        // Set up firebase.Firebase admin sdk
-
-        initializeScene(primaryStage);
-        MyCelsiusTelegramBot.setup();
-        Firebase.init();
-    }
-
-    // Start the application on the login screen first
-    private void initializeScene(Stage primaryStage) {
-        Parent root = null;
+    public void start(Stage primaryStage) {
         try {
-            root = FXMLLoader.load(getClass().getResource("auth_login.fxml"));
+            initializeScene(primaryStage);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        MyCelsiusTelegramBot.setup();
+    }
+
+    // Start the application on the login screen first
+    private void initializeScene(Stage primaryStage) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("P1919488 - MyCelsius");
+        // Shuts down the telegram bot server as well since otherwise bot will keep running resulting in duplicate instance
+        primaryStage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
         primaryStage.show();
     }
 }

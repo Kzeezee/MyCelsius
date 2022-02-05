@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@styles/error.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AuthRegister">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@styles/error.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AuthRegister">
    <children>
       <VBox prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -67,7 +68,7 @@
                         <Insets left="-50.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="registerPassword" promptText="Password" />
+                  <PasswordField fx:id="registerPassword" promptText="Password" />
                </children>
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="190.0">
@@ -80,7 +81,7 @@
                         <Insets left="-50.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="registerConfirmPass" promptText="Confirm password" />
+                  <PasswordField fx:id="registerConfirmPass" promptText="Confirm password" />
                </children>
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="300.0">
@@ -88,7 +89,7 @@
                   <Insets bottom="10.0" top="10.0" />
                </padding>
                <children>
-                  <Button fx:id="registerButton" mnemonicParsing="false" prefWidth="75.0" text="Register" />
+                  <Button fx:id="registerButton" mnemonicParsing="false" onAction="#onRegisterSubmission" prefWidth="75.0" text="Register" />
                </children>
             </HBox>
 
@@ -98,11 +99,25 @@
                </padding>
                <children>
                   <Label alignment="CENTER" text="Already have an account? Click " />
-                  <Label fx:id="loginRedirect" alignment="CENTER" onMouseClicked="#loginRedirect" style="-fx-text-fill: blue;" text="here!" />
+                  <Label fx:id="loginRedirect" alignment="CENTER" onMouseClicked="#loginRedirect" style="-fx-text-fill: blue;" text="here!">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Label>
                </children>
             </HBox>
 
          </children>
       </VBox>
+<!--      <DialogPane fx:id="registrationSuccessDialog" contentText="Account has been successfully registered. Please login again to access the application." expanded="true" headerText="Success" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="120.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="120.0">-->
+<!--         <opaqueInsets>-->
+<!--            <Insets />-->
+<!--         </opaqueInsets>-->
+<!--         <padding>-->
+<!--            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />-->
+<!--         </padding>-->
+<!--         <buttonTypes>-->
+<!--            <ButtonType fx:constant="OK" />-->
+<!--         </buttonTypes>-->
+<!--      </DialogPane>-->
    </children>
 </AnchorPane>

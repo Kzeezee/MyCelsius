@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@styles/error.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AuthLogin">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@styles/error.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AuthLogin">
    <children>
       <VBox prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -68,7 +69,7 @@
                         <Insets left="-50.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="loginPassword" promptText="Password" />
+                  <PasswordField fx:id="loginPassword" promptText="Password" />
                </children>
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="265.0">
@@ -86,7 +87,10 @@
                </padding>
                <children>
                   <Label alignment="CENTER" text="Don't have an account? Click " />
-                  <Label fx:id="registerRedirect" alignment="CENTER" onMouseClicked="#registerRedirect" style="-fx-text-fill: blue;" text="here!" />
+                  <Label fx:id="registerRedirect" alignment="CENTER" onMouseClicked="#registerRedirect" style="-fx-text-fill: blue;" text="here!">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Label>
                </children>
             </HBox>
 

@@ -12,15 +12,16 @@ import java.io.IOException;
 public class Firebase {
 
     public static void init() throws IOException {
-        Dotenv dotenv = Dotenv.load();
-        GoogleCredentials credentials = GoogleCredentials.fromStream(
-                        new FileInputStream(dotenv.get("SERVICE_ACCOUNT_JSON_PATH")))
-                .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+        if (FirebaseApp.getApps().isEmpty()) {
+            Dotenv dotenv = Dotenv.load();
+            GoogleCredentials credentials = GoogleCredentials.fromStream(
+                            new FileInputStream(dotenv.get("SERVICE_ACCOUNT_JSON_PATH")))
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
 
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(credentials)
-                .build();
-        FirebaseApp.initializeApp(options);
-        System.out.println("firebase.Firebase working!");
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(credentials)
+                    .build();
+            FirebaseApp.initializeApp(options);
+        }
     }
 }

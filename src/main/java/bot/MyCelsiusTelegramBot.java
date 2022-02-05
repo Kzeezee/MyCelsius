@@ -1,3 +1,5 @@
+package bot;
+
 import io.github.cdimascio.dotenv.Dotenv;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;

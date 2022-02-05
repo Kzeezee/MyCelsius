@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Dashboard">
+   <children>
+      <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="64.0">
+         <children>
+            <Pane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/MyCelsiusLogo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="16.0" top="16.0" />
+               </VBox.margin>
+            </Separator>
+            <Pane layoutX="18.0" layoutY="18.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: #2f2f2f;">
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" onMouseClicked="#homeTab" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/outline_home_black_24dp.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="16.0" />
+               </VBox.margin>
+            </Pane>
+            <Pane layoutX="18.0" layoutY="101.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: #2f2f2f;">
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/outline_insights_black_24dp.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="16.0" />
+               </VBox.margin>
+            </Pane>
+            <Pane layoutX="18.0" layoutY="167.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: #2f2f2f;">
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" onMouseClicked="#addMemberTab" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/outline_person_add_black_24dp.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="16.0" />
+               </VBox.margin>
+            </Pane>
+            <Pane layoutX="18.0" layoutY="233.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: #2f2f2f;">
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/outline_manage_accounts_black_24dp.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="16.0" />
+               </VBox.margin>
+            </Pane>
+            <Pane layoutX="18.0" layoutY="299.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: #2f2f2f;">
+               <children>
+                  <ImageView fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/outline_settings_black_24dp.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="16.0" />
+               </VBox.margin>
+            </Pane>
+            <Pane layoutX="18.0" layoutY="365.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: #2f2f2f;">
+               <children>
+                  <ImageView fx:id="menuLogout" fitHeight="48.0" fitWidth="48.0" onMouseClicked="#logout" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@assets/outline_logout_black_24dp.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Pane>
+         </children>
+         <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+         </padding></VBox>
+      <BorderPane fx:id="contentContainer" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1216.0">
+         <children>
+            <Label text="This is dashboard for org " />
+         </children></BorderPane>
+   </children>
+</HBox>
