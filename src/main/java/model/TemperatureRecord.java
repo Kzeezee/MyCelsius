@@ -8,6 +8,7 @@ public class TemperatureRecord {
     private String memberId;
     private Double temperature; // In Degree Celsius
     private Timestamp submissionDate;
+    private String organisationCode;
 
     public String getId() {
         return id;
@@ -47,6 +48,14 @@ public class TemperatureRecord {
 
     public void setSubmissionDate(Timestamp submissionDate) {
         this.submissionDate = submissionDate;
+    }
+
+    public String getOrganisationCode() {
+        return organisationCode;
+    }
+
+    public void setOrganisationCode(String organisationCode) {
+        this.organisationCode = organisationCode;
     }
 
     public TemperatureRecord() {}

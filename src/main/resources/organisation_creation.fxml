@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.OrganisationCreation">
+   <children>
+      <Label text="Organisation Creation">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="16.0" />
+         </VBox.margin></Label>
+      <Label text="Since it is your first time, please create an organisation responsible for tracking temperature recordings." textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font size="16.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="16.0" />
+         </VBox.margin>
+      </Label>
+       <HBox alignment="CENTER">
+           <VBox.margin>
+               <Insets />
+           </VBox.margin>
+           <children>
+               <Label alignment="CENTER_RIGHT" prefWidth="125.0" text="Organisation name" textAlignment="RIGHT">
+                   <HBox.margin>
+                       <Insets left="-50.0" right="10.0" />
+                   </HBox.margin></Label>
+               <TextField fx:id="createOrgName" promptText="Organisation name">
+               </TextField>
+           </children>
+           <padding>
+               <Insets bottom="16.0" top="16.0" />
+           </padding>
+       </HBox>
+      <Button mnemonicParsing="false" onAction="#onCreateOrg" prefWidth="75.0" text="Create">
+         <VBox.margin>
+            <Insets top="75.0" />
+         </VBox.margin>
+      </Button>
+   </children>
+   <padding>
+      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+   </padding>
+</VBox>

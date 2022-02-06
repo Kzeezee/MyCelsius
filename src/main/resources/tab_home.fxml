@@ -3,33 +3,44 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<fx:root prefHeight="720.0" prefWidth="1216.0" type="AnchorPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="800.0" prefWidth="1216.0" type="AnchorPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-       <VBox prefHeight="720.0" prefWidth="1216.0">
+       <VBox prefHeight="800.0" prefWidth="1216.0">
          <children>
-            <Label text="History" />
+            <Label layoutX="10.0" layoutY="10.0" text="Organisation Name">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Separator prefWidth="200.0">
+               <padding>
+                  <Insets bottom="8.0" top="8.0" />
+               </padding>
+            </Separator>
+            <Label text="History">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
             <Separator prefWidth="200.0">
                <VBox.margin>
                   <Insets bottom="8.0" top="8.0" />
                </VBox.margin>
-               <padding>
-                  <Insets left="16.0" right="16.0" />
-               </padding>
             </Separator>
             <HBox fx:id="chartHBox" prefHeight="150.0">
                <VBox.margin>
                   <Insets bottom="16.0" />
                </VBox.margin>
             </HBox>
-            <Label layoutX="10.0" layoutY="10.0" text="The current date's records:" />
+            <Label layoutX="10.0" layoutY="10.0" text="The current date's records:">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
             <Separator prefWidth="200.0">
                <VBox.margin>
                   <Insets bottom="8.0" top="8.0" />
                </VBox.margin>
-               <padding>
-                  <Insets left="16.0" right="16.0" />
-               </padding>
             </Separator>
             <HBox layoutX="10.0" layoutY="242.0" maxWidth="850.0" prefWidth="850.0">
                <padding>
@@ -90,6 +101,9 @@
                </VBox.margin>
             </HBox>
          </children>
+         <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+         </padding>
        </VBox>
       <Label fx:id="chartCaption" />
    </children>

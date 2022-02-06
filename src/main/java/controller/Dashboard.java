@@ -2,13 +2,12 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import util.StateManager;
 
 import java.io.IOException;
 
-import static util.JavaFXUtils.changeSceneWithRefControl;
+import static util.MyCelsiusUtils.changeSceneWithRefControl;
 
 public class Dashboard {
 

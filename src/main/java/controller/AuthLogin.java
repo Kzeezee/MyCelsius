@@ -1,6 +1,7 @@
 package controller;
 
-import exception.UserDoesNotExist;
+import exception.InvalidLoginCredentialsException;
+import exception.UserDoesNotExistException;
 import firebase.FirebaseDB;
 import firebase.IFirebaseDB;
 import javafx.css.PseudoClass;
@@ -8,16 +9,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.Duration;
+import model.UserRecord;
 import util.StateManager;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutionException;
 
 import static util.Constants.EMAIL_REGEX_PATTERN;
-import static util.Constants.INVALID_CREDENTIALS;
-import static util.JavaFXUtils.changeSceneWithRefControl;
+import static util.MyCelsiusUtils.changeSceneWithRefControl;
 
 public class AuthLogin implements Initializable {
 
@@ -48,23 +48,25 @@ public class AuthLogin implements Initializable {
             String email = loginEmail.getText().trim().toLowerCase();
             String password = loginPassword.getText();
             try {
-                String userId = firebaseDB.loginUser(email, password);
+                UserRecord userRecord = firebaseDB.loginUser(email, password);
+                // Set current session to the logged in user
+                StateManager.setCurrentUser(userRecord);
                 if (StateManager.isLoggedIn()) {
-                    // Go dashboard page
-                    System.out.println("Login success");
-                    System.out.println(userId);
-                    changeSceneWithRefControl(loginEmail, getClass(), "/dashboard.fxml");
-                } else if (userId.equals(INVALID_CREDENTIALS)) {
-                    // handle invalid credentials
-                    setFieldsWithError("Invalid credentials. Please enter again.");
+                    if (StateManager.getUserHasOrg()) {
+                        // Go dashboard page
+                        System.out.println("Login success");
+                        changeSceneWithRefControl(loginEmail, getClass(), "/dashboard.fxml");
+                    } else {
+                        // Redirect to organisation creation page where user will create their initial organisation
+                        System.out.println("Login success, heading to organisation creation");
+                        changeSceneWithRefControl(loginEmail, getClass(), "/organisation_creation.fxml");
+                    }
                 }
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (UserDoesNotExist e) {
+            } catch (UserDoesNotExistException e) {
                 setFieldsWithError("Account does not exist. Please enter a different account or create one.");
-            } catch (IOException e) {
+            } catch (InvalidLoginCredentialsException e) {
+                setFieldsWithError("Invalid credentials. Please enter again.");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

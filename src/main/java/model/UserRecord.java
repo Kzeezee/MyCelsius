@@ -1,8 +1,17 @@
 package model;
 
 public class UserRecord {
+    private String id;
     private String email;
-    private String userId;
+    private Boolean hasOrg;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getEmail() {
         return email;
@@ -12,11 +21,19 @@ public class UserRecord {
         this.email = email;
     }
 
-    public String getUserId() {
-        return userId;
+    public Boolean getHasOrg() {
+        return hasOrg;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setHasOrg(Boolean hasOrg) {
+        this.hasOrg = hasOrg;
+    }
+
+    public UserRecord() {}
+
+    public UserRecord(String id, String email, Boolean hasOrg) {
+        this.id = id;
+        this.email = email;
+        this.hasOrg = hasOrg;
     }
 }

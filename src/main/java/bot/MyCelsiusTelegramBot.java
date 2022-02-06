@@ -1,27 +1,32 @@
 package bot;
 
+import firebase.FirebaseDB;
+import firebase.IFirebaseDB;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.telegram.abilitybots.api.bot.AbilityBot;
-import org.telegram.abilitybots.api.objects.Ability;
-import org.telegram.abilitybots.api.objects.Reply;
-import org.telegram.abilitybots.api.objects.ReplyFlow;
+import org.telegram.abilitybots.api.objects.*;
 import org.telegram.abilitybots.api.toggle.BareboneToggle;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import util.Verification;
 
 import javax.validation.constraints.NotNull;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Predicate;
 
 import static org.telegram.abilitybots.api.objects.Locality.USER;
 import static org.telegram.abilitybots.api.objects.Privacy.PUBLIC;
+import static util.MyCelsiusUtils.isValidOrganisationCode;
 
 public class MyCelsiusTelegramBot extends AbilityBot {
 
     private static final BareboneToggle toggle = new BareboneToggle();
+    IFirebaseDB firebaseDB = new FirebaseDB();
 
     public static void setup() {
         try {
@@ -50,14 +55,16 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                 .locality(USER)
                 .privacy(PUBLIC)
                 .action(ctx -> silent.send("Hi! This is the MyCelsius bot aimed to simplify your temperature submission for your organisation." +
-                        "\n\nTo start, please type /submit to begin the temperature submission process.", ctx.chatId()))
+                        "\n\nTo start the temperature submission process, please type /submit if you are a member of a organisation or /submitguest " +
+                        "if you are a guest/visitor.", ctx.chatId()))
                 .build();
     }
 
     public ReplyFlow submit() {
         // TODO: Inline keyboard, invalid staff/organisation and guest submission process.
-        Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Your temperature has been successfully recorded for " +
-                new Date().getDate() + ".\nSubmission date: " +  new Date().toString(),
+        Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Your temperature has been successfully recorded. " +
+                "\n\nSubmitted for: " + getSubmissionFor() +
+                "\nTime of submission: " +  getSubmissionAt(),
                 getChatId(upd)), checkValidTemperature());
 
         Reply invalidOrganisation = Reply.of(upd -> silent.send("You have entered an invalid organisation code! Please retry the submission again. ",
@@ -69,7 +76,7 @@ public class MyCelsiusTelegramBot extends AbilityBot {
 
         ReplyFlow temperatureSubmission = ReplyFlow.builder(db)
                 .action(upd -> silent.send("Great! Now please submit your temperature.", getChatId(upd)))
-                .onlyIf(validOrganisationCode())
+                .onlyIf(validUserAndOrganisation())
                 .next(submissionSuccess)
                 .build();
 
@@ -93,7 +100,7 @@ public class MyCelsiusTelegramBot extends AbilityBot {
 
         ReplyFlow temperatureSubmission = ReplyFlow.builder(db)
                 .action(upd -> silent.send("Great! Now please submit your temperature.", getChatId(upd)))
-                .onlyIf(validOrganisationCode())
+                .onlyIf(validUserAndOrganisation())
                 .next(submissionSuccess)
                 .build();
 
@@ -101,6 +108,19 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                 .action(upd -> silent.send("Please enter your organisation code for temperature submission first.", getChatId(upd)))
                 .onlyIf(hasMessage("/submitguest"))
                 .next(temperatureSubmission)
+                .build();
+    }
+
+    public Ability cancel() {
+        return Ability.builder()
+                .name("cancel")
+                .info("Cancel current operation.")
+                .privacy(Privacy.PUBLIC)
+                .locality(Locality.ALL)
+                .action(ctx -> {
+                    db.<Long, Integer>getMap("user_state_replies").remove(ctx.chatId());
+                    silent.send("Operation cancelled.", ctx.chatId());
+                })
                 .build();
     }
 
@@ -119,8 +139,31 @@ public class MyCelsiusTelegramBot extends AbilityBot {
     }
 
     @NotNull
-    private Predicate<Update> validOrganisationCode() {
-        return upd -> upd.getMessage().getText().equals("deez");
+    private Predicate<Update> validUserAndOrganisation() {
+        return upd -> {
+            String message = upd.getMessage().getText().trim();
+            // Need to check both user telegram id and organisation code valid
+            // Then proceed with allowing next reply, else need to throw message and stop ability
+            if (message.length() == 6) { // Only proceed if length of text is valid for an org. code
+                if (isValidOrganisationCode(message)) { // Additional check for text being valid organisation code regex to reduce unnecessary Firestore reads.
+                    // Check firebase
+                    try {
+                        Verification verification = firebaseDB.verifyValidUserAndOrganisation(upd.getChatMember().getFrom().getId(), message);
+                        if (verification.getSuccess()) {
+                            return true;
+                        } else {
+                            silent.send(verification.getReason(), getChatId(upd)); // Will submit false afterwards to signify failing the check
+                            return false;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (message.length() > 0 && !message.equals("/submit")) {
+                silent.send("Please enter a valid organisation code", getChatId(upd));
+            }
+            return false;
+        };
     }
 
     @NotNull
@@ -131,5 +174,15 @@ public class MyCelsiusTelegramBot extends AbilityBot {
     @NotNull
     private Predicate<Update> validMember() {
         return upd -> upd.getMessage().getText().equals("checkstaff");
+    }
+
+    private String getSubmissionFor() {
+        String now = new Date().toString();
+        return (now.substring(0, 10) + " " + now.substring(now.length()-4));
+    }
+
+    private String getSubmissionAt() {
+        String now = new Date().toString();
+        return now.substring(11, now.length()-5);
     }
 }

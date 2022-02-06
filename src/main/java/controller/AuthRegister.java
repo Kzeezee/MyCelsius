@@ -8,15 +8,13 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Duration;
-import util.JavaFXUtils;
-import util.StateManager;
+import util.MyCelsiusUtils;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import static javafx.scene.control.ButtonType.OK;
 import static util.Constants.EMAIL_REGEX_PATTERN;
-import static util.JavaFXUtils.changeSceneWithRefControl;
+import static util.MyCelsiusUtils.changeSceneWithRefControl;
 
 public class AuthRegister {
 
@@ -118,7 +116,7 @@ public class AuthRegister {
         Button okBtn = (Button) dialog.getDialogPane().lookupButton(btn);
         okBtn.setOnAction(event -> {
             try {
-                JavaFXUtils.changeSceneWithRefControl(registerEmail, getClass(), "/auth_login.fxml");
+                MyCelsiusUtils.changeSceneWithRefControl(registerEmail, getClass(), "/auth_login.fxml");
             } catch (IOException e) {
                 e.printStackTrace();
             }
