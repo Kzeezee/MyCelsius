@@ -76,24 +76,24 @@ public class AuthLogin implements Initializable {
         loginEmail.pseudoClassStateChanged(errorClass, true);
         loginPassword.pseudoClassStateChanged(errorClass, true);
         Tooltip tooltip = new Tooltip();
-        tooltip.setShowDelay(Duration.millis(500));
+        tooltip.setShowDelay(Duration.millis(100));
         tooltip.setText(errMsg);
         loginEmail.setTooltip(tooltip);
         loginPassword.setTooltip(tooltip);
     }
 
-    // TODO: Update validation to match logging in rather than registering
     private Boolean validateInputs() {
         String emailAddress = loginEmail.getText();
         String password = loginPassword.getText();
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShowDelay(Duration.millis(500));
+        Tooltip emailTooltip = new Tooltip(), passwordTooltip = new Tooltip();
+        emailTooltip.setShowDelay(Duration.millis(100));
+        passwordTooltip.setShowDelay(Duration.millis(100));
 
         Boolean emailValid = false, passwordValid = false;
         if (!emailAddress.matches(EMAIL_REGEX_PATTERN)) {
             loginEmail.pseudoClassStateChanged(errorClass, true);
-            tooltip.setText("Email must be valid");
-            loginEmail.setTooltip(tooltip);
+            emailTooltip.setText("Email must be valid");
+            loginEmail.setTooltip(emailTooltip);
         } else {
             loginEmail.pseudoClassStateChanged(errorClass, false);
             loginEmail.setTooltip(null);
@@ -101,8 +101,8 @@ public class AuthLogin implements Initializable {
         }
         if (password.length() < 8) {
             loginPassword.pseudoClassStateChanged(errorClass, true);
-            tooltip.setText("Password must be at least 8 characters");
-            loginPassword.setTooltip(tooltip);
+            passwordTooltip.setText("Password must be at least 8 characters");
+            loginPassword.setTooltip(passwordTooltip);
         } else {
             loginPassword.pseudoClassStateChanged(errorClass, false);
             loginPassword.setTooltip(null);

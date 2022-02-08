@@ -63,7 +63,7 @@ public class AuthRegister {
     private void handleExistingEmail(String errMsg) {
         registerEmail.pseudoClassStateChanged(errorClass, true);
         Tooltip tooltip = new Tooltip();
-        tooltip.setShowDelay(Duration.millis(500));
+        tooltip.setShowDelay(Duration.millis(100));
         tooltip.setText(errMsg);
         registerEmail.setTooltip(tooltip);
     }
@@ -73,14 +73,15 @@ public class AuthRegister {
         String emailAddress = registerEmail.getText();
         String password = registerPassword.getText();
         String confirmPass = registerConfirmPass.getText();
-        Tooltip tooltip = new Tooltip();
-        tooltip.setShowDelay(Duration.millis(500));
+        Tooltip emailTooltip = new Tooltip(), passwordTooltip = new Tooltip();
+        emailTooltip.setShowDelay(Duration.millis(100));
+        passwordTooltip.setShowDelay(Duration.millis(100));
 
         Boolean emailValid = false, passwordValid = false;
         if (!emailAddress.matches(EMAIL_REGEX_PATTERN)) {
             registerEmail.pseudoClassStateChanged(errorClass, true);
-            tooltip.setText("Email must be valid");
-            registerEmail.setTooltip(tooltip);
+            emailTooltip.setText("Email must be valid");
+            registerEmail.setTooltip(emailTooltip);
         } else {
             registerEmail.pseudoClassStateChanged(errorClass, false);
             registerEmail.setTooltip(null);
@@ -88,14 +89,14 @@ public class AuthRegister {
         }
         if (password.length() < 8) {
             registerPassword.pseudoClassStateChanged(errorClass, true);
-            tooltip.setText("Password must be at least 8 characters");
-            registerPassword.setTooltip(tooltip);
+            passwordTooltip.setText("Password must be at least 8 characters");
+            registerPassword.setTooltip(passwordTooltip);
         } else if (!password.equals(confirmPass)) {
             registerPassword.pseudoClassStateChanged(errorClass, true);
             registerConfirmPass.pseudoClassStateChanged(errorClass, true);
-            tooltip.setText("Passwords must match");
-            registerPassword.setTooltip(tooltip);
-            registerConfirmPass.setTooltip(tooltip);
+            passwordTooltip.setText("Passwords must match");
+            registerPassword.setTooltip(passwordTooltip);
+            registerConfirmPass.setTooltip(passwordTooltip);
         } else {
             registerPassword.pseudoClassStateChanged(errorClass, false);
             registerPassword.setTooltip(null);

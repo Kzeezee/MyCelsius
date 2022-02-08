@@ -8,12 +8,10 @@ import static util.Constants.*;
     Acts as a session manager for the user. Handles holding current logged-in user and other user information.
  */
 public class StateManager {
-    private static String currentOrg = NO_ORGANISATION;
-    private static UserRecord currentUser = new UserRecord(NOT_LOGGED_IN, NO_EMAIL, false);
+    private static UserRecord currentUser = new UserRecord(NOT_LOGGED_IN, NO_EMAIL, NO_ORGANISATION, false);
 
     public static void logout() {
-        currentUser = new UserRecord(NOT_LOGGED_IN, NO_EMAIL, false);
-        currentOrg = NO_ORGANISATION;
+        currentUser = new UserRecord(NOT_LOGGED_IN, NO_EMAIL, NO_ORGANISATION,false);
     }
 
     public static Boolean isLoggedIn() {
@@ -41,10 +39,10 @@ public class StateManager {
     }
 
     public static String getCurrentOrg() {
-        return currentOrg;
+        return StateManager.currentUser.getOrganisationCode();
     }
 
     public static void setCurrentOrg(String currentOrg) {
-        StateManager.currentOrg = currentOrg;
+        StateManager.currentUser.setOrganisationCode(currentOrg);
     }
 }

@@ -1,17 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<fx:root type="AnchorPane" xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            maxHeight="-Infinity" maxWidth="-Infinity"
-            prefHeight="720.0" prefWidth="1216.0">
-    <children>
-        <Label text="Add Members"></Label>
-    </children>
-
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1216.0" stylesheets="@styles/error.css" type="VBox" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+   <padding>
+      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+   </padding>
+   <children>
+      <Label text="Manage Members">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font></Label>
+      <Separator prefWidth="200.0">
+         <VBox.margin>
+            <Insets bottom="8.0" top="8.0" />
+         </VBox.margin>
+      </Separator>
+      <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="400.0">
+               <children>
+                  <Label text="Add Member">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Separator prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets bottom="16.0" top="8.0" />
+                     </VBox.margin>
+                  </Separator>
+                  <Label text="Member Name">
+                     <VBox.margin>
+                        <Insets bottom="8.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="addMemberName" promptText="Name">
+                     <VBox.margin>
+                        <Insets bottom="16.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <Label layoutX="26.0" layoutY="133.0" text="Member Telegram ID">
+                     <VBox.margin>
+                        <Insets bottom="8.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="addMemberTelegramId" layoutX="26.0" layoutY="150.0" promptText="Telegram ID">
+                     <VBox.margin>
+                        <Insets bottom="16.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <Label layoutX="26.0" layoutY="83.0" text="Member Identifier (Optional)">
+                     <VBox.margin>
+                        <Insets bottom="8.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="addMemberIdentifier" layoutX="26.0" layoutY="108.0" promptText="Identifier">
+                     <VBox.margin>
+                        <Insets bottom="2.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <Label text="Identifiers are a way for you to recognise a unique individual like an email or a unique number" textFill="#909090" wrapText="true">
+                     <VBox.margin>
+                        <Insets bottom="16.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox alignment="TOP_CENTER">
+                     <children>
+                        <Button fx:id="addMemberButton" mnemonicParsing="false" text="Add Member" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="32.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+               <padding>
+                  <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+               </padding></VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Member List">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Separator prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                  </Separator>
+                  <BorderPane fx:id="manageMemberListContainer" VBox.vgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+               </padding></VBox>
+         </children>
+      </HBox>
+   </children>
 </fx:root>

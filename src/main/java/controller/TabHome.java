@@ -3,7 +3,6 @@ package controller;
 import com.google.cloud.Timestamp;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -18,11 +17,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import model.TemperatureRecord;
+import org.apache.commons.lang3.time.DateUtils;
 import util.TemperatureRecordCell;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static util.Constants.*;
 
 public class TabHome extends AnchorPane {
 
@@ -57,7 +61,9 @@ public class TabHome extends AnchorPane {
     // Query temperature records from past 5 days including today and fill 5 pie charts
     private void fillChartHBox() {
         List<PieChart> charts = new ArrayList<>();
-        Integer maxCharts = 5;
+        Integer maxCharts = CHARTS_TO_BE_DISPLAYED;
+        Date currentDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d MMM yy");
         for (int i = 0; i < maxCharts; i++) {
             // Filling data
             ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
@@ -80,7 +86,7 @@ public class TabHome extends AnchorPane {
                                 chartCaption.setTranslateX(event.getSceneX() - CAPTION_OFFSET);
                             }
                             chartCaption.setTranslateY(event.getSceneY());
-                            chartCaption.setText(String.valueOf(data.getName() + ": " + data.getPieValue()));
+                            chartCaption.setText(data.getName() + ": " + data.getPieValue());
                         }
                 );
                 data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED,
@@ -89,21 +95,26 @@ public class TabHome extends AnchorPane {
             }
 
             // Last few configs
-            chart.setTitle("Tuesday");
+            chart.setTitle(simpleDateFormat.format(DateUtils.addDays(currentDate, -(maxCharts-1-i) )));
             chart.setLabelsVisible(false);
             chart.setAnimated(true);
             chart.setCursor(Cursor.HAND);
-            chart.setStyle("-fx-background-color: #f2f2f2");
+            chart.setStyle(CHART_UNSELECTED);
             chart.setOnMouseClicked(event -> {
                 // Handle showing temperature records for this specific day
-                chartHBox.getChildren().get(this.currentSelectedChartIndex).setStyle("-fx-background-color: #f2f2f2");
+                chartHBox.getChildren().get(this.currentSelectedChartIndex).setStyle(CHART_UNSELECTED);
                 this.currentSelectedChartIndex = chartHBox.getChildren().indexOf(chart);
-                chart.setStyle("-fx-background-color: #8affff");
+                chart.setStyle(CHART_SELECTED_HIGHLIGHT);
                 System.out.println(this.currentSelectedChartIndex);
                 displaySubmissionRecords(Timestamp.now());
             });
             charts.add(chart);
         }
+        // Auto select last chart to show first
+        PieChart pieChart = charts.get(charts.size()-1);
+        pieChart.setStyle(CHART_SELECTED_HIGHLIGHT);
+        this.currentSelectedChartIndex = charts.size()-1;
+
         // If the HBox is not empty, clear it first.
         if (!chartHBox.getChildren().isEmpty()) {
             chartHBox.getChildren().clear();
@@ -117,8 +128,8 @@ public class TabHome extends AnchorPane {
         List<TemperatureRecord> records = new ArrayList<>();
 
         // testing
-        records.add(new TemperatureRecord("John", "912399123", 35.7, Timestamp.now()));
-        records.add(new TemperatureRecord("Jane", "213123154", 38.2, Timestamp.now()));
+        records.add(new TemperatureRecord("SAMPLEORG", "John", "912399123", 35.7, Timestamp.now()));
+        records.add(new TemperatureRecord("SAMPLEORG","Jane", "213123154", 38.2, Timestamp.now()));
 
         // Now display
         ObservableList<TemperatureRecord> list = FXCollections.observableArrayList(records);

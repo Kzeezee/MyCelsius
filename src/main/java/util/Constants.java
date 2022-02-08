@@ -1,7 +1,5 @@
 package util;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 public class Constants {
     // Firestore references
     public static final String USER_COLLECTION = "users";
@@ -13,6 +11,14 @@ public class Constants {
     public static final String EMAIL_REGEX_PATTERN = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
+    // Application constants
+    public static final Integer CHARTS_TO_BE_DISPLAYED = 5;
+
+    // Telegram bot constants
+    public static final Double TEMPERATURE_LOWER_LIMIT = 35.0;
+    public static final Double TEMPERATURE_HIGHER_LIMIT = 45.0;
+    public static final String ORGANISATION_MAPPING = "ORGANISATION_MAPPING";
+
     // Security constants
     public static final String INVALID_CREDENTIALS = "{{INVALID_CREDENTIALS}}";
     public static final String NOT_LOGGED_IN = "{{NO_USER_ID}}";
@@ -21,4 +27,6 @@ public class Constants {
 
     // Styling constants
     public static final String SPACING_STYLE = "-fx-padding: 0 8 0 8;";
+    public static final String CHART_SELECTED_HIGHLIGHT = "-fx-background-color: #8affff;";
+    public static final String CHART_UNSELECTED = "-fx-background-color: #f2f2f2;";
 }

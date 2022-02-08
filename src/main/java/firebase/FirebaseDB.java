@@ -8,6 +8,7 @@ import com.google.firebase.cloud.FirestoreClient;
 import exception.InvalidLoginCredentialsException;
 import exception.NotUniqueEmailException;
 import exception.UserDoesNotExistException;
+import model.MemberRecord;
 import model.TemperatureRecord;
 import model.UserRecord;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -48,12 +49,7 @@ public class FirebaseDB implements IFirebaseDB {
             data.put("password", hashedPassword);
 
             // Setting the data and checking if successful
-            ApiFuture<WriteResult> result = docRef.set(data);
-            if (result != null) {
-                return result.get().getUpdateTime();
-            } else {
-                throw new RuntimeException("Unexpected error occurred when retrieving write result from database.");
-            }
+            return writeResult(docRef, data);
         } else {
             throw new NotUniqueEmailException("Email already exists: " + email);
         }
@@ -68,10 +64,14 @@ public class FirebaseDB implements IFirebaseDB {
             String docEmail = userDoc.getString("email");
             String docPassword = userDoc.getString("password");
             String docId = userDoc.getId();
-            Boolean hasOrg = checkUserHasOrganisation(docId);
+            String organisationCode = checkUserHasOrganisation(docId);
+            Boolean hasOrg = false;
+            if (organisationCode != null) {
+                hasOrg = true;
+            }
             if (docEmail.equalsIgnoreCase(email) && BCrypt.verifyer().verify(password.getBytes(), docPassword.getBytes()).verified) { // Validate email and password
                 // Valid match
-                UserRecord userRecord = new UserRecord(docId, docEmail, hasOrg);
+                UserRecord userRecord = new UserRecord(docId, docEmail, organisationCode, hasOrg);
                 return userRecord;
             } else {
                 // Invalid match and hence invalid credentials
@@ -111,19 +111,80 @@ public class FirebaseDB implements IFirebaseDB {
 
     @Override
     public Timestamp submitTemperature(TemperatureRecord temperatureRecord) throws ExecutionException, InterruptedException {
+        // Querying for member information first
+        CollectionReference orgMembers = db.collection(ORGANISATION_COLLECTION).document(temperatureRecord.getOrganisationCode()).collection(MEMBERS_COLLECTION);
+        Query getMemberQuery = orgMembers.whereEqualTo("telegramId", temperatureRecord.getTelegramId()).limit(1);
+        List<QueryDocumentSnapshot> documentSnapshots = getMemberQuery.get().get().getDocuments();
 
-        return null;
+        // Double check to verify legitimate member of organisation
+        if (!documentSnapshots.isEmpty()) {
+            // Save the temperature submission
+            QueryDocumentSnapshot memberDocRef = documentSnapshots.get(0);
+            String name = memberDocRef.getString("name");
+            DocumentReference temperatureDocRef = db.collection(TEMPERATURE_COLLECTION).document();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("organisationCode", temperatureRecord.getOrganisationCode());
+            data.put("name", name); // We want to use official member's name rather than the member's telegram username.
+            data.put("telegramId", temperatureRecord.getTelegramId());
+            data.put("temperature", temperatureRecord.getTemperature());
+            data.put("submissionDate", temperatureRecord.getSubmissionDate());
+
+            return writeResult(temperatureDocRef, data);
+        } else {
+            throw new RuntimeException("No matching member from organisation yet received temperature submission request for members");
+        }
     }
 
     @Override
-    public Boolean checkUserHasOrganisation(String userId) throws InterruptedException, ExecutionException {
+    public List<MemberRecord> getMemberRecords(String organisationCode) throws ExecutionException, InterruptedException {
+        CollectionReference members = db.collection(ORGANISATION_COLLECTION).document(organisationCode).collection(MEMBERS_COLLECTION);
+        List<QueryDocumentSnapshot> documentSnapshots = members.get().get().getDocuments();
+
+        List<MemberRecord> records = new ArrayList<>();
+        for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+            MemberRecord memberRecord = new MemberRecord();
+            memberRecord.setId(documentSnapshot.getId());
+            memberRecord.setName(documentSnapshot.getString("name"));
+            memberRecord.setIdentifier(documentSnapshot.getString("identifier"));
+            memberRecord.setTelegramId(documentSnapshot.getString("telegramId"));
+            records.add(memberRecord);
+        }
+        return records;
+    }
+
+    @Override
+    public Timestamp addMember(String organisationCode, MemberRecord memberRecord) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = db.collection(ORGANISATION_COLLECTION).document(organisationCode).collection(MEMBERS_COLLECTION).document();
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", memberRecord.getName());
+        data.put("identifier", memberRecord.getIdentifier());
+        data.put("telegramId", memberRecord.getTelegramId());
+
+        return writeResult(docRef, data);
+    }
+
+    @Override
+    public Timestamp deleteMember(String organisationCode, MemberRecord memberRecord) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = db.collection(ORGANISATION_COLLECTION).document(organisationCode).collection(MEMBERS_COLLECTION).document(memberRecord.getId());
+        ApiFuture<WriteResult> result = docRef.delete();
+        if (result != null) {
+            return result.get().getUpdateTime();
+        } else {
+            throw new RuntimeException("Unexpected error occurred when retrieving write result from database.");
+        }
+    }
+
+    @Override
+    public String checkUserHasOrganisation(String userId) throws InterruptedException, ExecutionException {
         CollectionReference organisations = db.collection(ORGANISATION_COLLECTION);
-        Query query = organisations.whereArrayContains("admins", userId);
+        Query query = organisations.whereArrayContains("admins", userId).limit(1);
         List<QueryDocumentSnapshot> documentSnapshots = query.get().get().getDocuments();
         if (!documentSnapshots.isEmpty()) {
-            return true;
+            QueryDocumentSnapshot organisation = documentSnapshots.get(0);
+            return organisation.getId();
         } else {
-            return false;
+            return null;
         }
     }
 
@@ -132,7 +193,7 @@ public class FirebaseDB implements IFirebaseDB {
         DocumentReference organisationRef = db.collection(ORGANISATION_COLLECTION).document(organisationCode);
         if (organisationRef != null) {
             CollectionReference members = organisationRef.collection(MEMBERS_COLLECTION);
-            Query query = members.whereEqualTo("telegramId", telegramId).limit(1);
+            Query query = members.whereEqualTo("telegramId", telegramId.toString()).limit(1);
             List<QueryDocumentSnapshot> documentSnapshots;
             try {
                 documentSnapshots = query.get().get().getDocuments();
@@ -165,9 +226,9 @@ public class FirebaseDB implements IFirebaseDB {
 
     private Boolean checkNotDuplicateOrgCode(String orgCode) throws ExecutionException, InterruptedException {
         CollectionReference orgs = db.collection(ORGANISATION_COLLECTION);
-        Query query = orgs.whereEqualTo("code", orgCode.trim()).limit(1);
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-        if (querySnapshot.get().getDocuments().isEmpty()) {
+        DocumentReference orgDocumentReference = orgs.document(orgCode);
+        DocumentSnapshot orgDocument = orgDocumentReference.get().get();
+        if (!orgDocument.exists()) {
             return true;
         } else {
             return false;
@@ -186,6 +247,15 @@ public class FirebaseDB implements IFirebaseDB {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private Timestamp writeResult(DocumentReference documentReference, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        ApiFuture<WriteResult> result = documentReference.set(data);
+        if (result != null) {
+            return result.get().getUpdateTime();
+        } else {
+            throw new RuntimeException("Unexpected error occurred when retrieving write result from database.");
         }
     }
 

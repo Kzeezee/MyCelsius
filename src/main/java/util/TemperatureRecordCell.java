@@ -18,25 +18,23 @@ public class TemperatureRecordCell extends ListCell<TemperatureRecord> {
     HBox hbox = new HBox();
     Label name = new Label("John Doe");
     Label temperature = new Label("35.0");
-    ImageView status = new ImageView();
     Pane pane = new Pane();
-    Button button = new Button("Action");
+    ImageView status = new ImageView();
     String lastItem;
 
     public TemperatureRecordCell() {
         super();
         padContent();
-        hbox.getChildren().addAll(name, temperature, status, pane, button);
+        hbox.getChildren().addAll(name, temperature, pane, status);
         hbox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(pane, Priority.ALWAYS);
-        button.setOnAction(event -> System.out.println(lastItem + " : " + event));
     }
 
     @Override
     protected void updateItem(TemperatureRecord item, boolean empty) {
         super.updateItem(item, empty);
         if (item != null && !empty) { // <== test for null item and empty parameter
-            name.setText(item.getMemberName());
+            name.setText(item.getName());
             temperature.setText(item.getTemperature().toString() + " \u00B0C"); // To show degree celsius
             Image img = new Image(getClass().getResourceAsStream("/assets/submitted.png"));
             status.setImage(img);
