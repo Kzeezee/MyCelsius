@@ -7,7 +7,9 @@ import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.*;
 import org.telegram.abilitybots.api.toggle.BareboneToggle;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import util.Verification;
@@ -32,7 +34,9 @@ public class MyCelsiusTelegramBot extends AbilityBot {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             Dotenv dotenv = Dotenv.load();
-            telegramBotsApi.registerBot(new MyCelsiusTelegramBot(dotenv.get("TELEGRAM_BOT_TOKEN"), "MyCelsiusBot"));
+            MyCelsiusTelegramBot bot = new MyCelsiusTelegramBot(dotenv.get("TELEGRAM_BOT_TOKEN"), "MyCelsiusBot");
+//            bot.executeAsync(BotApiMethod<Verification>)
+            telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -148,7 +152,8 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                 if (isValidOrganisationCode(message)) { // Additional check for text being valid organisation code regex to reduce unnecessary Firestore reads.
                     // Check firebase
                     try {
-                        Verification verification = firebaseDB.verifyValidUserAndOrganisation(upd.getChatMember().getFrom().getId(), message);
+                        Long personId = upd.getMessage().getFrom().getId();
+                        Verification verification = firebaseDB.verifyValidUserAndOrganisation(personId, message);
                         if (verification.getSuccess()) {
                             return true;
                         } else {
