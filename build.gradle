@@ -27,6 +27,12 @@ dependencies {
     //Firebase
     implementation 'com.google.firebase:firebase-admin:8.1.0'
     implementation 'com.google.cloud:google-cloud-firestore:1.32.0'
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 }
 
 test {

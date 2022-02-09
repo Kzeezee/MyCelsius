@@ -1,20 +1,15 @@
 package util;
 
 import com.google.cloud.Timestamp;
-import controller.TabAddMember;
-import firebase.Firebase;
+import controller.TabManageMembers;
 import firebase.FirebaseDB;
 import firebase.IFirebaseDB;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import model.MemberRecord;
-
-import java.io.IOException;
 
 import static util.Constants.SPACING_STYLE;
 
@@ -64,7 +59,7 @@ public class MemberRecordCell extends ListCell<MemberRecord> {
                 Timestamp timestamp = firebaseDB.deleteMember(StateManager.getCurrentOrg(), memberRecord);
                 if (timestamp != null) {
                     System.out.println("Successfully deleted member: " + memberRecord.getName() + " at " + timestamp);
-                    TabAddMember.updateMemberListView(memberRecord, false);
+                    TabManageMembers.updateMemberListView(memberRecord, false);
                 } else {
                     throw new RuntimeException("Something went wrong when deleting member: " + memberRecord.getName());
                 }

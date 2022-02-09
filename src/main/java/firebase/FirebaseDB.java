@@ -12,14 +12,12 @@ import model.MemberRecord;
 import model.TemperatureRecord;
 import model.UserRecord;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import util.StateManager;
 import util.Verification;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static util.Constants.*;
@@ -111,28 +109,29 @@ public class FirebaseDB implements IFirebaseDB {
 
     @Override
     public Timestamp submitTemperature(TemperatureRecord temperatureRecord) throws ExecutionException, InterruptedException {
-        // Querying for member information first
-        CollectionReference orgMembers = db.collection(ORGANISATION_COLLECTION).document(temperatureRecord.getOrganisationCode()).collection(MEMBERS_COLLECTION);
-        Query getMemberQuery = orgMembers.whereEqualTo("telegramId", temperatureRecord.getTelegramId()).limit(1);
-        List<QueryDocumentSnapshot> documentSnapshots = getMemberQuery.get().get().getDocuments();
+        if (temperatureRecord.getIsMember()) {
+            // Submit as member
+            // Querying for member information first
+            CollectionReference orgMembers = db.collection(ORGANISATION_COLLECTION).document(temperatureRecord.getOrganisationCode()).collection(MEMBERS_COLLECTION);
+            Query getMemberQuery = orgMembers.whereEqualTo("telegramId", temperatureRecord.getTelegramId()).limit(1);
+            List<QueryDocumentSnapshot> documentSnapshots = getMemberQuery.get().get().getDocuments();
 
-        // Double check to verify legitimate member of organisation
-        if (!documentSnapshots.isEmpty()) {
-            // Save the temperature submission
-            QueryDocumentSnapshot memberDocRef = documentSnapshots.get(0);
-            String name = memberDocRef.getString("name");
-            DocumentReference temperatureDocRef = db.collection(TEMPERATURE_COLLECTION).document();
+            // Double check to verify legitimate member of organisation
+            if (!documentSnapshots.isEmpty()) {
+                // Save the temperature submission
+                QueryDocumentSnapshot memberDocRef = documentSnapshots.get(0);
+                String name = memberDocRef.getString("name");
+                DocumentReference memberTemperatureDocRef = db.collection(TEMPERATURE_COLLECTION).document();
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("organisationCode", temperatureRecord.getOrganisationCode());
-            data.put("name", name); // We want to use official member's name rather than the member's telegram username.
-            data.put("telegramId", temperatureRecord.getTelegramId());
-            data.put("temperature", temperatureRecord.getTemperature());
-            data.put("submissionDate", temperatureRecord.getSubmissionDate());
-
-            return writeResult(temperatureDocRef, data);
+                return writeResult(memberTemperatureDocRef, mapTemperatureSubmissionData(temperatureRecord));
+            } else {
+                throw new RuntimeException("No matching member from organisation yet received temperature submission request for members");
+            }
         } else {
-            throw new RuntimeException("No matching member from organisation yet received temperature submission request for members");
+            // Submit as guest
+            DocumentReference guestTemperatureDocRef = db.collection(TEMPERATURE_COLLECTION).document();
+
+            return writeResult(guestTemperatureDocRef, mapTemperatureSubmissionData(temperatureRecord));
         }
     }
 
@@ -141,16 +140,33 @@ public class FirebaseDB implements IFirebaseDB {
         CollectionReference members = db.collection(ORGANISATION_COLLECTION).document(organisationCode).collection(MEMBERS_COLLECTION);
         List<QueryDocumentSnapshot> documentSnapshots = members.get().get().getDocuments();
 
-        List<MemberRecord> records = new ArrayList<>();
-        for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
-            MemberRecord memberRecord = new MemberRecord();
-            memberRecord.setId(documentSnapshot.getId());
-            memberRecord.setName(documentSnapshot.getString("name"));
-            memberRecord.setIdentifier(documentSnapshot.getString("identifier"));
-            memberRecord.setTelegramId(documentSnapshot.getString("telegramId"));
-            records.add(memberRecord);
-        }
-        return records;
+        return mapMemberRecordsList(documentSnapshots);
+    }
+
+    @Override
+    public List<TemperatureRecord> getMemberTemperatureRecords(String organisationCode, Timestamp currentDate, Integer historyInDays) throws ExecutionException, InterruptedException {
+        CollectionReference temperatures = db.collection(TEMPERATURE_COLLECTION);
+        Query query = temperatures
+                .whereEqualTo("isMember", true)
+                .whereGreaterThanOrEqualTo("submissionDate", Timestamp.of(DateUtils.addDays(currentDate.toDate(), -historyInDays)))
+                .whereLessThan("submissionDate", currentDate)
+                .orderBy("submissionDate");
+        List<QueryDocumentSnapshot> documentSnapshots = query.get().get().getDocuments();
+
+        return mapTemperatureRecordsList(documentSnapshots);
+    }
+
+    @Override
+    public List<TemperatureRecord> getGuestTemperatureRecords(String organisationCode, Timestamp date) throws ExecutionException, InterruptedException {
+        CollectionReference temperatures = db.collection(TEMPERATURE_COLLECTION);
+        Query query = temperatures
+                .whereEqualTo("isMember", false)
+                .whereGreaterThanOrEqualTo("submissionDate", date)
+                .whereLessThan("submissionDate", DateUtils.addDays(date.toDate(), 1))
+                .orderBy("submissionDate");
+        List<QueryDocumentSnapshot> documentSnapshots = query.get().get().getDocuments();
+
+        return mapTemperatureRecordsList(documentSnapshots);
     }
 
     @Override
@@ -189,6 +205,16 @@ public class FirebaseDB implements IFirebaseDB {
     }
 
     @Override
+    public Verification verifyValidOrganisation(String organisationCode) {
+        DocumentReference organisationRef = db.collection(ORGANISATION_COLLECTION).document(organisationCode);
+        if (organisationRef != null) {
+            return new Verification(true, null); // Found a match of the organisation
+        } else {
+            return new Verification(false, "No such organisation exists.");
+        }
+    }
+
+    @Override
     public Verification verifyValidUserAndOrganisation(Long telegramId, String organisationCode) {
         DocumentReference organisationRef = db.collection(ORGANISATION_COLLECTION).document(organisationCode);
         if (organisationRef != null) {
@@ -206,11 +232,14 @@ public class FirebaseDB implements IFirebaseDB {
                 throw new RuntimeException("Something went wrong when retrieving data from database.");
             }
         } else {
-            return new Verification(false, "Invalid organisation code."); // No such organisation exists
+            return new Verification(false, "No such organisation exists."); // No such organisation exists
         }
     }
 
 
+    /*
+     * Private utility methods
+    */
     private QueryDocumentSnapshot getUser(String email) throws ExecutionException, InterruptedException {
         email = email.trim();
         CollectionReference users = db.collection(USER_COLLECTION);
@@ -248,6 +277,46 @@ public class FirebaseDB implements IFirebaseDB {
         } else {
             return false;
         }
+    }
+
+    private Map<String, Object> mapTemperatureSubmissionData(TemperatureRecord temperatureRecord) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("organisationCode", temperatureRecord.getOrganisationCode());
+        data.put("name", temperatureRecord.getName()); // In the case for guest, we will use their username
+        data.put("telegramId", temperatureRecord.getTelegramId());
+        data.put("temperature", temperatureRecord.getTemperature());
+        data.put("submissionDate", temperatureRecord.getSubmissionDate());
+        data.put("isMember", temperatureRecord.getIsMember());
+        return data;
+    }
+
+    private List<MemberRecord> mapMemberRecordsList(List<QueryDocumentSnapshot> documentSnapshots) {
+        List<MemberRecord> records = new ArrayList<>();
+        for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+            MemberRecord memberRecord = new MemberRecord();
+            memberRecord.setId(documentSnapshot.getId());
+            memberRecord.setName(documentSnapshot.getString("name"));
+            memberRecord.setIdentifier(documentSnapshot.getString("identifier"));
+            memberRecord.setTelegramId(documentSnapshot.getString("telegramId"));
+            records.add(memberRecord);
+        }
+        return records;
+    }
+
+    private List<TemperatureRecord> mapTemperatureRecordsList(List<QueryDocumentSnapshot> documentSnapshots) {
+        List<TemperatureRecord> temperatureRecords = new ArrayList<>();
+        for (QueryDocumentSnapshot documentSnapshot : documentSnapshots) {
+            TemperatureRecord temperatureRecord = new TemperatureRecord();
+            temperatureRecord.setId(documentSnapshot.getId());
+            temperatureRecord.setOrganisationCode(documentSnapshot.getString("organisationCode"));
+            temperatureRecord.setName(documentSnapshot.getString("name"));
+            temperatureRecord.setTelegramId(documentSnapshot.getString("telegramId"));
+            temperatureRecord.setTemperature(documentSnapshot.getDouble("temperature"));
+            temperatureRecord.setSubmissionDate(documentSnapshot.getTimestamp("submissionDate"));
+            temperatureRecord.setIsMember(documentSnapshot.getBoolean("isMember"));
+            temperatureRecords.add(temperatureRecord);
+        }
+        return temperatureRecords;
     }
 
     private Timestamp writeResult(DocumentReference documentReference, Map<String, Object> data) throws ExecutionException, InterruptedException {

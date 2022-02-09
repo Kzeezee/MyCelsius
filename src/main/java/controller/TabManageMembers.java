@@ -15,14 +15,13 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import model.MemberRecord;
 import util.MemberRecordCell;
-import util.MyCelsiusUtils;
 import util.StateManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabAddMember extends VBox {
+public class TabManageMembers extends VBox {
 
     @FXML
     TextField addMemberName;
@@ -39,8 +38,8 @@ public class TabAddMember extends VBox {
     private final PseudoClass errorClass = PseudoClass.getPseudoClass("error");
     IFirebaseDB firebaseDB = new FirebaseDB();
 
-    public TabAddMember() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/tab_add_member.fxml"));
+    public TabManageMembers() {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/tab_manage_members.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         try {
@@ -94,10 +93,6 @@ public class TabAddMember extends VBox {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // testing
-        records.add(new MemberRecord("John Newman", "johnkerman@gmail.com", "9168883"));
-        records.add(new MemberRecord("John Kerman", "johnkerman@gmail.com", "9168883"));
 
         // Now display
         ObservableList<MemberRecord> list = FXCollections.observableArrayList(records);

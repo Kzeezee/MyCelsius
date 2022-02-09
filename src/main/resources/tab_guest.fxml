@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<fx:root prefHeight="800.0" prefWidth="1216.0" type="VBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <padding>
+      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+   </padding>
+    <children>
+        <Label text="Guests' Temperature Submissions">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font></Label>
+        <Separator prefWidth="200.0">
+            <VBox.margin>
+                <Insets bottom="8.0" top="8.0" />
+            </VBox.margin>
+        </Separator>
+      <HBox prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox prefWidth="900.0">
+               <children>
+                  <HBox>
+                      <children>
+                          <Separator layoutX="326.0" layoutY="26.0" orientation="VERTICAL" prefHeight="5.0">
+                              <padding>
+                                  <Insets right="8.0" />
+                              </padding>
+                          </Separator>
+                          <Label maxWidth="300.0" minWidth="300.0" prefWidth="300.0" text="Name" />
+                          <Separator orientation="VERTICAL" prefHeight="5.0">
+                              <padding>
+                                  <Insets right="8.0" />
+                              </padding>
+                          </Separator>
+                          <Label layoutX="26.0" layoutY="26.0" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Temperature" />
+                          <Pane prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                          <Separator layoutX="326.0" layoutY="26.0" orientation="VERTICAL" prefHeight="5.0">
+                              <padding>
+                                  <Insets right="8.0" />
+                              </padding>
+                          </Separator>
+                          <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="340.0" layoutY="26.0" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Submission Status">
+                              <HBox.margin>
+                                  <Insets right="8.0" />
+                              </HBox.margin></Label>
+                          <Separator layoutX="640.0" layoutY="26.0" orientation="VERTICAL" prefHeight="5.0" />
+                      </children>
+                     <VBox.margin>
+                        <Insets bottom="8.0" top="8.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <BorderPane fx:id="guestListContainer" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Select date to view:">
+                     <VBox.margin>
+                        <Insets bottom="8.0" />
+                     </VBox.margin>
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
+                  <DatePicker fx:id="guestDatePicker" promptText="View Date" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+    </children>
+</fx:root>

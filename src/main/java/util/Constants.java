@@ -12,7 +12,7 @@ public class Constants {
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
     // Application constants
-    public static final Integer CHARTS_TO_BE_DISPLAYED = 5;
+    public static final Integer MAX_CHARTS_TO_BE_DISPLAYED = 5;
 
     // Telegram bot constants
     public static final Double TEMPERATURE_LOWER_LIMIT = 35.0;

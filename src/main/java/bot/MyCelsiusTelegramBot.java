@@ -10,6 +10,7 @@ import org.telegram.abilitybots.api.objects.*;
 import org.telegram.abilitybots.api.toggle.BareboneToggle;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import util.Verification;
@@ -57,9 +58,13 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                 .info("introduces the general usage of the bot")
                 .locality(USER)
                 .privacy(PUBLIC)
-                .action(ctx -> silent.send("Hi! This is the MyCelsius bot aimed to simplify your temperature submission for your organisation." +
-                        "\n\nTo start the temperature submission process, please type /submit if you are a member of a organisation or /submitguest " +
-                        "if you are a guest/visitor.", ctx.chatId()))
+                .action(ctx -> silent.send("Hi! This is the MyCelsius bot aimed to simplify your temperature submission for your organisation. " +
+                        "To start the temperature submission process, here are a list of commands:\n\n" +
+                        "/submit - Temperature submission for members of an organisation.\n" +
+                        "/submitguest - Temperature submission for guests of an organisation.\n\n" +
+                        "If submitting as guests, please make sure your Telegram first name and last name at the point of submission matches the details that " +
+                        "the organisation has of you."
+                        , ctx.chatId()))
                 .build();
     }
 
@@ -83,9 +88,12 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                 .build();
     }
 
+    // Submission of temperature for guests to a organisation
     public ReplyFlow submitGuest() {
-        Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Your temperature has been successfully recorded for " +
-                new Date().toString() + ".", getChatId(upd)), checkValidTemperatureForMembers());
+        Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Temperature submission as a guest has been successfully recorded. " +
+                        "\n\nSubmitted for: " + getSubmissionFor() +
+                        "\nTime of submission: " +  getSubmissionAt(),
+                getChatId(upd)), checkValidTemperatureForGuests());
 
         ReplyFlow temperatureSubmission = ReplyFlow.builder(db)
                 .action(upd -> silent.send("Great! Now please submit your temperature.", getChatId(upd)))
@@ -129,16 +137,61 @@ public class MyCelsiusTelegramBot extends AbilityBot {
             Map<String, String> orgMap = db.getMap(ORGANISATION_MAPPING);
             Long userId = upd.getMessage().getFrom().getId();
             String organisationCode = orgMap.get(userId.toString());
-            if (!message.equals(organisationCode)) {
+            if (!message.equals(organisationCode)) { // Prevent error message being sent from previous update of sending organisation code
                 try {
                     Double temperature = Double.parseDouble(message);
                     if (temperature >= TEMPERATURE_LOWER_LIMIT && temperature <= TEMPERATURE_HIGHER_LIMIT) {
                         // Submit final temperature
                         silent.send("Submitting temperature...", getChatId(upd));
                         // Null for member name for now as we need to query official name from Firestore
-                        TemperatureRecord temperatureRecord = new TemperatureRecord(organisationCode, null, userId.toString(), temperature, Timestamp.now());
+                        TemperatureRecord temperatureRecord = new TemperatureRecord(organisationCode, null, userId.toString(), temperature, Timestamp.now(), true);
                         firebaseDB.submitTemperature(temperatureRecord);
                         System.out.println("Member submitted temperature: " + upd.getMessage().getFrom().getUserName() + " " + temperature);
+                        orgMap.remove(userId);
+                        return true;
+                    } else {
+                        silent.send("Please enter a valid temperature", getChatId(upd));
+                        return false;
+                    }
+                } catch (NumberFormatException e) {
+                    silent.send("Please enter a valid temperature", getChatId(upd));
+                    return false;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    silent.send("Something went wrong when submitting temperature. Please try again.", getChatId(upd));
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        };
+    }
+
+    @NotNull
+    private Predicate<Update> checkValidTemperatureForGuests() {
+        return upd -> {
+            String message = upd.getMessage().getText().trim();
+            Map<String, String> orgMap = db.getMap(ORGANISATION_MAPPING);
+            Long userId = upd.getMessage().getFrom().getId();
+            String organisationCode = orgMap.get(userId.toString());
+            if (!message.equals(organisationCode)) { // Prevent error message being sent from previous update of sending organisation code
+                try {
+                    Double temperature = Double.parseDouble(message);
+                    if (temperature >= TEMPERATURE_LOWER_LIMIT && temperature <= TEMPERATURE_HIGHER_LIMIT) {
+                        // Submit final temperature
+                        silent.send("Submitting temperature...", getChatId(upd));
+                        // Will use Guest's Telegram first name and last name for name recording
+                        User guest = upd.getMessage().getFrom();
+                        String guestName = guest.getFirstName();
+                        if (!guest.getLastName().equals("null")) {
+                            if (!guest.getLastName().trim().isEmpty()) {
+                                guestName = guestName + " " + guest.getLastName();
+                            }
+                        }
+                        TemperatureRecord temperatureRecord =
+                                new TemperatureRecord(organisationCode, guestName, userId.toString(), temperature, Timestamp.now(), false);
+                        firebaseDB.submitTemperature(temperatureRecord);
+                        System.out.println("Guest submitted temperature: " + upd.getMessage().getFrom().getUserName() + " " + temperature);
                         orgMap.remove(userId);
                         return true;
                     } else {
@@ -164,7 +217,7 @@ public class MyCelsiusTelegramBot extends AbilityBot {
         return upd -> {
             String message = upd.getMessage().getText().trim();
             // Need to check both user telegram id and organisation code valid
-            // Then proceed with allowing next reply, else need to throw message and stop ability
+            // Then proceed with allowing next reply, else need to show error reason.
             if (message.length() == 6) { // Only proceed if length of text is valid for an org. code
                 if (isValidOrganisationCode(message)) { // Additional check for text being valid organisation code regex to reduce unnecessary Firestore reads.
                     // Check firebase
@@ -196,15 +249,13 @@ public class MyCelsiusTelegramBot extends AbilityBot {
     private Predicate<Update> validOrganisation() {
         return upd -> {
             String message = upd.getMessage().getText().trim();
-            // Need to check both user telegram id and organisation code valid
-            // Then proceed with allowing next reply, else need to throw message and stop ability
             if (message.length() == 6) { // Only proceed if length of text is valid for an org. code
                 if (isValidOrganisationCode(message)) { // Additional check for text being valid organisation code regex to reduce unnecessary Firestore reads.
                     // Check firebase
-                    silent.send("Validating organisation and sender...", getChatId(upd));
+                    silent.send("Validating organisation...", getChatId(upd));
                     try {
                         Long userId = upd.getMessage().getFrom().getId();
-                        Verification verification = firebaseDB.verifyValidUserAndOrganisation(userId, message);
+                        Verification verification = firebaseDB.verifyValidOrganisation(message);
                         if (verification.getSuccess()) {
                             // Store the organisation code in embedded database for the next step (temperature submission)
                             Map<String, String> orgMap = db.getMap(ORGANISATION_MAPPING);
@@ -218,21 +269,11 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                         e.printStackTrace();
                     }
                 }
-            } else if (message.length() > 0 && !message.equals("/submit")) {
+            } else if (message.length() > 0 && !message.equals("/submitguest")) {
                 silent.send("Please enter a valid organisation code", getChatId(upd));
             }
             return false;
         };
-    }
-
-    @NotNull
-    private Predicate<Update> invalidOrganisationCode() {
-        return upd -> !upd.getMessage().getText().equals("deez");
-    }
-
-    @NotNull
-    private Predicate<Update> validMember() {
-        return upd -> upd.getMessage().getText().equals("checkstaff");
     }
 
     private String getSubmissionFor() {

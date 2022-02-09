@@ -35,8 +35,14 @@ public class TemperatureRecordCell extends ListCell<TemperatureRecord> {
         super.updateItem(item, empty);
         if (item != null && !empty) { // <== test for null item and empty parameter
             name.setText(item.getName());
-            temperature.setText(item.getTemperature().toString() + " \u00B0C"); // To show degree celsius
-            Image img = new Image(getClass().getResourceAsStream("/assets/submitted.png"));
+            Image img;
+            if (item.getTemperature() != null && item.getSubmissionDate() != null) { // Will be null if member has not submitted a temperature record for that day.
+                temperature.setText(item.getTemperature().toString() + " \u00B0C"); // To show degree celsius
+                img = new Image(getClass().getResourceAsStream("/assets/submitted.png"));
+            } else {
+                temperature.setText("Not submitted");
+                img = new Image(getClass().getResourceAsStream("/assets/not_submitted.png"));
+            }
             status.setImage(img);
             setGraphic(hbox);
         } else {

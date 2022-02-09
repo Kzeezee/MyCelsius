@@ -9,7 +9,7 @@
    <children>
        <VBox prefHeight="800.0" prefWidth="1216.0">
          <children>
-            <Label layoutX="10.0" layoutY="10.0" text="Organisation Name">
+            <Label layoutX="10.0" layoutY="10.0" text="Dashboard">
                <font>
                   <Font name="System Bold" size="24.0" />
                </font>
@@ -28,12 +28,12 @@
                   <Insets bottom="8.0" top="8.0" />
                </VBox.margin>
             </Separator>
-            <HBox fx:id="chartHBox" prefHeight="150.0">
+            <HBox fx:id="chartHBox" prefHeight="150.0" stylesheets="@styles/chartstyles.css">
                <VBox.margin>
                   <Insets bottom="16.0" />
                </VBox.margin>
             </HBox>
-            <Label layoutX="10.0" layoutY="10.0" text="The current date's records:">
+            <Label fx:id="dateSectionTitleText" layoutX="10.0" layoutY="10.0" text="The current date's records:">
                <font>
                   <Font size="16.0" />
                </font></Label>
@@ -79,12 +79,36 @@
             <HBox layoutX="10.0" layoutY="27.0" maxHeight="1.7976931348623157E308">
                <children>
                   <BorderPane fx:id="memberListContainer" prefHeight="480.0" prefWidth="850.0" />
-                  <VBox prefWidth="398.0">
+                  <VBox alignment="TOP_CENTER" fillWidth="false" prefWidth="398.0">
                      <padding>
                         <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
                      </padding>
                      <children>
-                        <Label text="Stats" />
+                        <Label text="Organisation Code">
+                           <VBox.margin>
+                              <Insets bottom="8.0" />
+                           </VBox.margin></Label>
+                        <TextField fx:id="organisationCodeDisplay" alignment="CENTER" editable="false" text="ORGCOD">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="64.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <Label text="Submission rate:">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="16.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="submissionRateText" text="20%">
+                           <font>
+                              <Font name="System Bold" size="20.0" />
+                           </font>
+                        </Label>
                      </children></VBox>
                </children>
                <padding>

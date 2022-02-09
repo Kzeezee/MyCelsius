@@ -30,8 +30,12 @@ public class Dashboard {
         contentContainer.setCenter(new TabHome());
     }
 
-    public void addMemberTab() throws IOException {
-        contentContainer.setCenter(new TabAddMember());
+    public void guestTab() throws IOException {
+        contentContainer.setCenter(new TabGuest());
+    }
+
+    public void manageMembersTab() throws IOException {
+        contentContainer.setCenter(new TabManageMembers());
     }
 
     public void logout() throws IOException {
