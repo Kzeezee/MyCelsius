@@ -193,9 +193,9 @@ public class TabHome extends AnchorPane {
         }
 
         // Filter only temperature records matching the current selected date view
-        Integer daysToAdd = -(this.currentSelectedChartIndex+1-MAX_CHARTS_TO_BE_DISPLAYED); // Calculate based on chart selection event
+        Integer daysToAdd = (this.currentSelectedChartIndex+1-MAX_CHARTS_TO_BE_DISPLAYED); // Calculate based on chart selection event
         if (providedIndex != null) {
-            daysToAdd = -(providedIndex+1-MAX_CHARTS_TO_BE_DISPLAYED); // Calculate based on provided index
+            daysToAdd = (providedIndex+1-MAX_CHARTS_TO_BE_DISPLAYED); // Calculate based on provided index
         }
         Date selectedChartDate = DateUtils.addDays(new Date(), daysToAdd);
         for (TemperatureRecord tempRecord : masterMemberTemperatureRecords) {
