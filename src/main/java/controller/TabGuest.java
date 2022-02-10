@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
@@ -24,7 +25,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class TabGuest extends VBox {
 
@@ -32,6 +32,8 @@ public class TabGuest extends VBox {
     DatePicker guestDatePicker;
     @FXML
     BorderPane guestListContainer;
+    @FXML
+    Label noGuestRecordsText;
 
     private ListView<TemperatureRecord> guestListView = new ListView<>();
     private IFirebaseDB firebaseDB = new FirebaseDB();
@@ -66,6 +68,13 @@ public class TabGuest extends VBox {
             guestTemperatureRecords = firebaseDB.getGuestTemperatureRecords(StateManager.getCurrentOrg(), selectedTimestamp);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        // Set notice for no records
+        if (guestTemperatureRecords.isEmpty()) {
+            noGuestRecordsText.setVisible(true);
+        } else {
+            noGuestRecordsText.setVisible(false);
         }
 
         ObservableList<TemperatureRecord> observableList = FXCollections.observableArrayList(guestTemperatureRecords);

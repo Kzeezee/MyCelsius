@@ -66,7 +66,11 @@
                         <Font size="16.0" />
                      </font>
                   </Label>
-                  <DatePicker fx:id="guestDatePicker" promptText="View Date" />
+                  <DatePicker fx:id="guestDatePicker" promptText="View Date">
+                     <VBox.margin>
+                        <Insets bottom="16.0" />
+                     </VBox.margin></DatePicker>
+                  <Label fx:id="noGuestRecordsText" text="No records available for this date!" textFill="#c64040" />
                </children>
             </VBox>
          </children>

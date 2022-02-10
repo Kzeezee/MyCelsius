@@ -84,12 +84,10 @@ public class AuthLogin implements Initializable {
 
     private Boolean validateInputs() {
         String emailAddress = loginEmail.getText();
-        String password = loginPassword.getText();
-        Tooltip emailTooltip = new Tooltip(), passwordTooltip = new Tooltip();
+        Tooltip emailTooltip = new Tooltip();
         emailTooltip.setShowDelay(Duration.millis(100));
-        passwordTooltip.setShowDelay(Duration.millis(100));
 
-        Boolean emailValid = false, passwordValid = false;
+        Boolean emailValid = false;
         if (!emailAddress.matches(EMAIL_REGEX_PATTERN)) {
             loginEmail.pseudoClassStateChanged(errorClass, true);
             emailTooltip.setText("Email must be valid");
@@ -99,16 +97,7 @@ public class AuthLogin implements Initializable {
             loginEmail.setTooltip(null);
             emailValid = true;
         }
-        if (password.length() < 8) {
-            loginPassword.pseudoClassStateChanged(errorClass, true);
-            passwordTooltip.setText("Password must be at least 8 characters");
-            loginPassword.setTooltip(passwordTooltip);
-        } else {
-            loginPassword.pseudoClassStateChanged(errorClass, false);
-            loginPassword.setTooltip(null);
-            passwordValid = true;
-        }
-        return (emailValid && passwordValid);
+        return (emailValid);
     }
 
 }

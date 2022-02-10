@@ -3,6 +3,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -29,7 +30,8 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("auth_login.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("P1919488 - MyCelsius");
+        primaryStage.getIcons().add(new Image("/assets/MyCelsiusLogo.png"));
+        primaryStage.setTitle("MyCelsius by Goh Xuan Yu Oliver(P1919488)");
         // Shuts down the telegram bot server as well since otherwise bot will keep running resulting in duplicate instance
         primaryStage.setOnCloseRequest(event -> {
             System.exit(0);

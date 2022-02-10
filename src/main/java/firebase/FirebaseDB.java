@@ -123,7 +123,15 @@ public class FirebaseDB implements IFirebaseDB {
                 String name = memberDocRef.getString("name");
                 DocumentReference memberTemperatureDocRef = db.collection(TEMPERATURE_COLLECTION).document();
 
-                return writeResult(memberTemperatureDocRef, mapTemperatureSubmissionData(temperatureRecord));
+                Map<String, Object> data = new HashMap<>();
+                data.put("organisationCode", temperatureRecord.getOrganisationCode());
+                data.put("name", name);
+                data.put("telegramId", temperatureRecord.getTelegramId());
+                data.put("temperature", temperatureRecord.getTemperature());
+                data.put("submissionDate", temperatureRecord.getSubmissionDate());
+                data.put("isMember", temperatureRecord.getIsMember());
+
+                return writeResult(memberTemperatureDocRef, data);
             } else {
                 throw new RuntimeException("No matching member from organisation yet received temperature submission request for members");
             }
@@ -131,7 +139,15 @@ public class FirebaseDB implements IFirebaseDB {
             // Submit as guest
             DocumentReference guestTemperatureDocRef = db.collection(TEMPERATURE_COLLECTION).document();
 
-            return writeResult(guestTemperatureDocRef, mapTemperatureSubmissionData(temperatureRecord));
+            Map<String, Object> data = new HashMap<>();
+            data.put("organisationCode", temperatureRecord.getOrganisationCode());
+            data.put("name", temperatureRecord.getName()); // In the case for guest, we will use their username
+            data.put("telegramId", temperatureRecord.getTelegramId());
+            data.put("temperature", temperatureRecord.getTemperature());
+            data.put("submissionDate", temperatureRecord.getSubmissionDate());
+            data.put("isMember", temperatureRecord.getIsMember());
+
+            return writeResult(guestTemperatureDocRef, data);
         }
     }
 
@@ -150,7 +166,7 @@ public class FirebaseDB implements IFirebaseDB {
                 .whereEqualTo("isMember", true)
                 .whereGreaterThanOrEqualTo("submissionDate", Timestamp.of(DateUtils.addDays(currentDate.toDate(), -historyInDays)))
                 .whereLessThan("submissionDate", currentDate)
-                .orderBy("submissionDate");
+                .orderBy("submissionDate", Query.Direction.DESCENDING);
         List<QueryDocumentSnapshot> documentSnapshots = query.get().get().getDocuments();
 
         return mapTemperatureRecordsList(documentSnapshots);
@@ -277,17 +293,6 @@ public class FirebaseDB implements IFirebaseDB {
         } else {
             return false;
         }
-    }
-
-    private Map<String, Object> mapTemperatureSubmissionData(TemperatureRecord temperatureRecord) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("organisationCode", temperatureRecord.getOrganisationCode());
-        data.put("name", temperatureRecord.getName()); // In the case for guest, we will use their username
-        data.put("telegramId", temperatureRecord.getTelegramId());
-        data.put("temperature", temperatureRecord.getTemperature());
-        data.put("submissionDate", temperatureRecord.getSubmissionDate());
-        data.put("isMember", temperatureRecord.getIsMember());
-        return data;
     }
 
     private List<MemberRecord> mapMemberRecordsList(List<QueryDocumentSnapshot> documentSnapshots) {
