@@ -88,7 +88,7 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                 .build();
     }
 
-    // Submission of temperature for guests to a organisation
+    // Submission of temperature for guests to an organisation
     public ReplyFlow submitGuest() {
         Reply submissionSuccess = Reply.of(upd -> silent.send("Success! Temperature submission as a guest has been successfully recorded. " +
                         "\n\nSubmitted for: " + getSubmissionFor() +
@@ -183,9 +183,12 @@ public class MyCelsiusTelegramBot extends AbilityBot {
                         // Will use Guest's Telegram first name and last name for name recording
                         User guest = upd.getMessage().getFrom();
                         String guestName = guest.getFirstName();
-                        if (!guest.getLastName().equals("null")) {
-                            if (!guest.getLastName().trim().isEmpty()) {
-                                guestName = guestName + " " + guest.getLastName();
+                        String lastName = guest.getLastName();
+                        if (lastName != null) {
+                            if (!guest.getLastName().equals("null")) {
+                                if (!guest.getLastName().trim().isEmpty()) {
+                                    guestName = guestName + " " + guest.getLastName();
+                                }
                             }
                         }
                         TemperatureRecord temperatureRecord =
