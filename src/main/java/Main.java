@@ -26,7 +26,6 @@ public class Main extends Application {
 
     // Start the application on the login screen first
     private void initializeScene(Stage primaryStage) throws IOException {
-        // dashboard.fxml when debugging, auth_login.fxml when actual
         Parent root = FXMLLoader.load(getClass().getResource("auth_login.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);

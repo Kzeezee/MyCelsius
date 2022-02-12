@@ -21,7 +21,7 @@ public class OrganisationCreationSuccess {
     public void onConfirm() {
         // Redirect user to dashboard
         try {
-            changeSceneWithRefControl(createOrgSuccessCode, getClass(), "/dashboard.fxml");
+            changeSceneWithRefControl(createOrgSuccessCode, getClass(), "/main_application.fxml");
         } catch (IOException e) {
             e.printStackTrace();
         }

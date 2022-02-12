@@ -55,7 +55,7 @@ public class AuthLogin implements Initializable {
                     if (StateManager.getUserHasOrg()) {
                         // Go dashboard page
                         System.out.println("Login success");
-                        changeSceneWithRefControl(loginEmail, getClass(), "/dashboard.fxml");
+                        changeSceneWithRefControl(loginEmail, getClass(), "/main_application.fxml");
                     } else {
                         // Redirect to organisation creation page where user will create their initial organisation
                         System.out.println("Login success, heading to organisation creation");

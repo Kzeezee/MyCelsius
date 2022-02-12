@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static util.MyCelsiusUtils.changeSceneWithRefControl;
 
-public class Dashboard {
+public class NavigationController {
 
     @FXML
     private ImageView menuLogout;
