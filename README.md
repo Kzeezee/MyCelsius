@@ -32,7 +32,7 @@ The Telegram Bot supports:
 
 ### User Guide
 
-For a walkthrough of how to use 'MyCelsius', please refer to the <a href="https://github.com/Kzeezee/MyCelsius/wiki">Github Wiki</a>.
+For a walkthrough of how to use **MyCelsius**, please refer to the <a href="https://github.com/Kzeezee/MyCelsius/wiki">Github Wiki</a>.
 
 ---
 
