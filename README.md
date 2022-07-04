@@ -16,6 +16,9 @@ This repository combines both the Telegram Bot and the user application. Therefo
 ---
 
 ### Overview of Features
+
+![MyCelsiusUI](https://user-images.githubusercontent.com/68066041/177201540-89fd86c2-629a-414a-a69c-165890d1f905.png)
+
 The user application supports:
  - Organisation creation and management
  - Organisation members creation and management
@@ -30,11 +33,8 @@ The Telegram Bot supports:
 
 ---
 
-### User Guide
-
-For a walkthrough of how to use **MyCelsius**, please refer to the <a href="https://github.com/Kzeezee/MyCelsius/wiki">Github Wiki</a>.
-
----
-
 ### Additional Requirements
-An active internet connection is required for the application to function.
+* Active internet connection
+* Firebase project with Firestore
+* Telegram bot
+* .env file with *"TELEGRAM_BOT_TOKEN"* and *"SERVICE_ACCOUNT_JSON_PATH"* filled with your Telegram bot's token and your Firebase project's service account json respectively
